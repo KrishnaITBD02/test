@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 print("hey")
-=======
-print("test")
->>>>>>> 17e2fab (k)
 import time
 
 print("Start")

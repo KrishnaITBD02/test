@@ -1,3 +1,4 @@
+print("hey")
 import time
 
 print("Start")

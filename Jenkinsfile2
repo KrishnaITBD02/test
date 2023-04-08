@@ -10,10 +10,6 @@ pipeline {
     }
   }
   post {
-    always {
-      // Clean up workspace
-      cleanWs()
-    }
     success {
       // Publish analysis results to SonarQube server
       withSonarQubeEnv('SonarQube') { // Replace with your SonarQube server name

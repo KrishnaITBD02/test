@@ -1,27 +1,30 @@
 pipeline {
-  agent any
-
-  stages {
-    stage('SonarQube analysis') {
-      environment {
-        scannerHome = tool '[sonar server name]'
-      }
-      steps {
-        withSonarQubeEnv('[Sonar Environment name]') {
-          sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=python"
-          sonar.python.version=3.8
-        }
-      }
-      post {
-        always {
-          script {
-            if (currentBuild.result == 'FAILURE') {
-              error "SonarQube analysis failed"
+    agent any
+    stages {
+        stage('SonarQube analysis') {
+            environment {
+                scannerHome = tool 'sonarqube'
             }
-          }
+            steps {
+                withSonarQubeEnv('SonarQube'){
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.language=python"
+                    script {
+                        env.sonar_python_version = '3.8'
+                    }
+                }
+            }
         }
-      }
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    script {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
+                    }
+                }
+            }
+        }
     }
-  }
 }
-
